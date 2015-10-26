@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 
 RUN mkdir -p /var/www
+RUN rm -rf /var/www/html
 RUN git clone https://github.com/q2a/question2answer.git /var/www/html
 
 ADD entrypoint.sh /entrypoint.sh
