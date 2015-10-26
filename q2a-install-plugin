@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -e
+set -u
+
+usage() {
+	echo "usage: $0 <plugin> [<plugin> ...]"
+	echo "   ie: $0 wiesom/qa-behind-reverse-proxy-overrides.git"
+	echo "       $0 https://github.com/wiesom/qa-behind-reverse-proxy-overrides.git"
+	echo
+	echo "if <plugin> does not contain ://, $0 will asume that it is a github repo "
+	echo
+}
+
+qa_plugin_folder=/var/www/html/qa-plugin
+plugins=()
+while [ $# -gt 0 ]; do
+	plugin="$1"
+	shift
+	if [ -z "$plugin" ]; then
+		continue
+	fi
+	plugins+=( "$plugin" )
+done
+
+if [ "${#plugins[@]}" -eq 0 ]; then
+	usage >&2
+	exit 1
+fi
+
+for plugin in "${plugins[@]}"; do
+    if [[ $plugin != *"://"* ]]; then
+        plugin_url="https://github.com/${plugin}"
+    else 
+        plugin_url=$plugin
+    fi
+    plugin_name_lc=$(basename $plugin_url | sed 's/.git$//' | tr '[:upper:]' '[:lower:]')
+    
+    echo "Installing the plugin '$plugin_url' in '$qa_plugin_folder/$plugin_name_lc'"
+    git clone $plugin_url $qa_plugin_folder/$plugin_name_lc
+
+done
+

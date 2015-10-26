@@ -15,6 +15,8 @@ RUN mkdir -p /var/www
 RUN rm -rf /var/www/html
 RUN git clone https://github.com/q2a/question2answer.git /var/www/html
 
+ADD q2a-install-plugin /usr/local/bin/q2a-install-plugin
+
 ADD entrypoint.sh /entrypoint.sh
 RUN chown root:root /entrypoint.sh
 RUN chmod 755 /entrypoint.sh
